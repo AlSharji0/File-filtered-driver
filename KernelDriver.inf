@@ -1,0 +1,62 @@
+;
+; NasaKernelDriver.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = NasaKernelDriver.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+NasaKernelDriver.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%NasaKernelDriver.DeviceDesc% = NasaKernelDriver_Device, Root\NasaKernelDriver ; TODO: edit hw-id
+
+[NasaKernelDriver_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+NasaKernelDriver.sys
+
+;-------------- Service installation
+[NasaKernelDriver_Device.NT.Services]
+AddService = NasaKernelDriver,%SPSVCINST_ASSOCSERVICE%, NasaKernelDriver_Service_Inst
+
+; -------------- NasaKernelDriver driver install sections
+[NasaKernelDriver_Service_Inst]
+DisplayName    = %NasaKernelDriver.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\NasaKernelDriver.sys
+
+[NasaKernelDriver_Device.NT.Wdf]
+KmdfService = NasaKernelDriver, NasaKernelDriver_wdfsect
+
+[NasaKernelDriver_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "NasaKernelDriver Installation Disk"
+NasaKernelDriver.DeviceDesc = "NasaKernelDriver Device"
+NasaKernelDriver.SVCDESC = "NasaKernelDriver Service"
